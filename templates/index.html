@@ -1,10 +1,25 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+{%with messages = get_flashed_messages() %}
 {%include 'header.html'%}
 
+{%if not logged_in%}
+<div class="container login">
+    <div class="row">
 
-<div class="container">
-<h1> Hello World! </h1>
-</div>
-
-
-
+      <div class="col-lg-8 col-md-10 mx-auto content">
+        {{ wtf.quick_form(form, button_map={"submit": "primary"}) }}
+      </div>
+    </div>
+    {%if messages%}
+    {%for message in messages%}
+    <p style="color:red;text-align: center; font-size: 80%; "> {{ message }} </p>
+    {%endfor%}
+    {%endif%}
+  </div>
+  {%endif%}
+  {%endwith%}
+  {%endblock%}
+  
 {%include 'footer.html'%}
