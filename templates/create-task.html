@@ -1,0 +1,24 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content %}
+{%with messages = get_flashed_messages() %}
+{%include 'header.html'%}
+
+<div class="row headline">
+  <div class="col">
+  <h1 class="title">Add a new task:</h1>
+  </div> 
+</div>
+
+  <div class="container create-task">
+    <div class="row">
+
+      <div class="col-lg-8 col-md-10 mx-auto content">
+        {{ wtf.quick_form(form, button_map={"submit": "primary"}) }}
+      </div>
+    </div>
+
+    {%endwith%}
+    {%endblock%}
+    
+  {%include 'footer.html'%}

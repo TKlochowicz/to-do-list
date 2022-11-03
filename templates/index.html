@@ -4,6 +4,15 @@
 {%with messages = get_flashed_messages() %}
 {%include 'header.html'%}
 
+<div class="row headline">
+  <div class="col">
+  {%if logged_in%}
+    <h3 class="personalized-headline">Hi {{current_user.name}}, this is your:</h3>
+  {%endif%}
+  <h1 class="title">To Do List</h1>
+  </div> 
+</div>
+
 {%if not logged_in%}
 <div class="container login">
     <div class="row">
@@ -20,6 +29,10 @@
   </div>
   {%endif%}
   {%endwith%}
+
+  
+
+
   {%endblock%}
   
 {%include 'footer.html'%}

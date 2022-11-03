@@ -2,11 +2,13 @@ from flask import Flask, render_template, redirect, url_for, flash, request, abo
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
+from sqlalchemy.orm import relationship
+from wtforms import StringField, SubmitField, PasswordField, DateTimeField, RadioField
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from wtforms.validators import DataRequired, URL, Email
 import os
+from functools import wraps
 
 class RegisterForm(FlaskForm):
     email = StringField("Email", validators=[Email(), DataRequired()])
@@ -18,6 +20,14 @@ class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Log in")
+
+class NewTask(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    deadline = DateTimeField("Deadline date", validators=[DataRequired()])
+    description = StringField("Description", validators=[DataRequired()])
+    done = RadioField("Done", validators=[DataRequired()])
+    submit = SubmitField("Add Task")
+    
 
 
 app =Flask(__name__)
@@ -35,6 +45,17 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(250), unique=True,  nullable=False)
     password = db.Column(db.String(500), nullable=False)
     name = db.Column(db.String(250), nullable=False)
+    task = relationship('Task', back_populates='user')
+
+class Task(db.Model):
+    __tablename__ = "tasks"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id= db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = relationship("User", back_populates="task")
+    name = db.Column(db.String(50), nullable=False)
+    deadline = db.Column(db.DateTime)
+    done = db.Column(db.Boolean)
+    description = db.Column(db.String(500))
 
 
 
@@ -43,6 +64,14 @@ lm.init_app(app)
 
 with app.app_context():
     db.create_all()
+
+def logged_in_only(function):
+    @wraps(function)
+    def decorated_function(*args, **kwargs):
+        if current_user.is_anonymous:
+            abort(404)
+        return function(*args, **kwargs)
+    return decorated_function
 
 
 @lm.user_loader
@@ -93,6 +122,16 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+@app.route('/create_task')
+@logged_in_only
+def create():
+    user_logged_in=current_user.is_authenticated
+    form=NewTask()
+    if form.validate_on_submit():
+        pass
+
+    return render_template("create-task.html", form=form, logged_in=user_logged_in)
 
 
 if __name__ =='__main__':

@@ -5,11 +5,26 @@ body {
   }
   @media (max-width: 979px) {
     body {
-      padding-top: 0px;
+      padding-top: 40px;
     }
   }
 
+/* Headlines */
+.headline{
+  margin: auto;
+  text-align: center;
+  margin-top: 5%;
+}
+.title{
+  margin: 2%;
+}
+.personalized-headline{
+  margin: 2%;
+}
+
 /* Login Page */
 .login{
-  margin-top: 10%; 
+  margin-top: 8%; 
 }
+
+
