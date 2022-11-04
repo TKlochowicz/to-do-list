@@ -32,8 +32,35 @@ body {
   margin: 3% 20% 
 }
 
+
+.head-task-text{
+  font-weight: 600;
+  font-size: 200%;
+}
+
+.head-separator{
+  border: 1px solid rgb(167, 28, 164);
+  margin-right: 40%;
+}
+
 .task{
   padding-bottom: 1%;
+}
+
+.task-text{
+  font-size: 150%;
+}
+
+.check-image{
+  height:10%;
+  width: auto;
+}
+
+.control{
+  margin-left: 25px;
+  font-size: 120%;
+  color: rgb(167, 28, 164);
+  margin-top: 3px;
 }
 
 

@@ -144,6 +144,34 @@ def create():
 
     return render_template("create-task.html", form=form, logged_in=user_logged_in)
 
+@app.route("/delete/<int:task_id>")
+@logged_in_only
+def delete_task(task_id):
+    task_to_delete = Task.query.get(task_id)
+    if current_user.id == task_to_delete.user_id:
+        db.session.delete(task_to_delete)
+        db.session.commit()
+    return redirect(url_for('home'))
+
+@app.route("/edit-task/<int:task_id>",  methods=['GET','POST'])
+@logged_in_only
+def edit_task(task_id):
+    user_logged_in=current_user.is_authenticated
+    task = Task.query.get(task_id)
+    edit_form = NewTask(
+        name = task.name,
+        deadline = task.deadline,
+        description = task.description
+    )
+    if edit_form.validate_on_submit():
+        task.name = edit_form.name.data
+        task.deadline = edit_form.deadline.data
+        task.description = edit_form.description.data
+        db.session.commit()
+        return redirect(url_for("home"))
+
+    return render_template("create-task.html", form=edit_form, logged_in=user_logged_in)
+
 
 if __name__ =='__main__':
     app.run(debug=True)
