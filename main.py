@@ -9,6 +9,7 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from wtforms.validators import DataRequired, URL, Email
 import os
 from functools import wraps
+from datetime import datetime
 
 class RegisterForm(FlaskForm):
     email = StringField("Email", validators=[Email(), DataRequired()])
@@ -23,9 +24,8 @@ class LoginForm(FlaskForm):
 
 class NewTask(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
-    deadline = DateTimeField("Deadline date", validators=[DataRequired()])
+    deadline = DateTimeField("Deadline date", validators=[DataRequired()], default=datetime.today)
     description = StringField("Description", validators=[DataRequired()])
-    done = RadioField("Done", validators=[DataRequired()])
     submit = SubmitField("Add Task")
     
 
@@ -96,8 +96,11 @@ def home():
             else:
                 flash('Password incorrect! Try again please.')
                 return redirect(url_for('home'))
-
-    return render_template("index.html", form=form, logged_in=user_logged_in)
+    if user_logged_in:
+        to_do_list = db.session.query(Task).filter_by(user_id=current_user.id).all()
+    else:
+        to_do_list = []
+    return render_template("index.html", form=form, logged_in=user_logged_in, to_do_list=to_do_list)
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -123,13 +126,21 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-@app.route('/create_task')
+@app.route('/create_task', methods=['GET','POST'])
 @logged_in_only
 def create():
     user_logged_in=current_user.is_authenticated
     form=NewTask()
     if form.validate_on_submit():
-        pass
+        user = current_user
+        name = form.name.data
+        deadline = form.deadline.data
+        done = False
+        description = form.description.data
+        new_task = Task(user=user, name=name, deadline=deadline, done=done, description=description)
+        db.session.add(new_task)
+        db.session.commit()
+        return redirect(url_for('home'))
 
     return render_template("create-task.html", form=form, logged_in=user_logged_in)
 

@@ -27,4 +27,13 @@ body {
   margin-top: 8%; 
 }
 
+/* Tasks */
+.tasks{
+  margin: 3% 20% 
+}
+
+.task{
+  padding-bottom: 1%;
+}
+
 

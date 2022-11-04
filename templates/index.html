@@ -30,6 +30,25 @@
   {%endif%}
   {%endwith%}
 
+  {%if logged_in%}
+  <div class="container-fluid tasks">
+      {%for task in to_do_list%}
+      <div class="row task">
+
+        <div class="col-md-2">
+          {{task.name}}
+        </div>
+        <div class="col-md-2">
+          {{task.deadline}}
+        </div>
+        <div class="col-md-4">
+          {{task.description}}
+        </div>
+      </div>
+      {%endfor%}
+    </div>
+  {%endif%}
+
   
 
 
